@@ -41,6 +41,11 @@ In your ``app/config/config.yml`` add:
 
 That's it! Your "Book" entity is now registered as Sylius Resource.
 
+.. note::
+
+    The Doctrine ORM is assumed by default, if you are using another supported
+    ORM you should specify the ``driver`` key.
+
 Do you want to try it out? Add following lines to ``app/config/routing.yml``:
 
 .. code-block:: yaml
@@ -49,6 +54,8 @@ Do you want to try it out? Add following lines to ``app/config/routing.yml``:
         resource: |
             alias: app.book
         type: sylius.resource_api
+        defaults:
+            _format: json
 
 Full JSON/XML CRUD API is ready to use. Sounds crazy? Spin up the built-in server and give it a try:
 

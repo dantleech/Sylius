@@ -27,7 +27,7 @@ Now we can configure our first grid:
 
     # app/config/config.yml
 
-    sylius_grids:
+    sylius_grid:
         grids:
             app_tournament:
                 driver: doctrine/orm # Use appropriate driver.
