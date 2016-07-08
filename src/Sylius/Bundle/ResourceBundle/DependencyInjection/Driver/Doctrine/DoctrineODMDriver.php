@@ -50,6 +50,12 @@ class DoctrineODMDriver extends AbstractDoctrineDriver
             $repositoryClass = $metadata->getClass('repository');
         }
 
+        if ($this->isServiceId($repositoryClass)) {
+            $reference = new Reference($repositoryClass);
+            $container->setDefinition($metadata->getSericeId('repository'), $reference);
+            return;
+        }
+
         $unitOfWorkDefinition = new Definition('Doctrine\\ODM\\MongoDB\\UnitOfWork');
         $unitOfWorkDefinition
             ->setFactory([new Reference($this->getManagerServiceId($metadata)), 'getUnitOfWork'])

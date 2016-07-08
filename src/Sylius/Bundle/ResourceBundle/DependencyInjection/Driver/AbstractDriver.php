@@ -58,15 +58,6 @@ abstract class AbstractDriver implements DriverInterface
         if ($metadata->hasClass('model')) {
             $container->setParameter(sprintf('%s.model.%s.class', $metadata->getApplicationName(), $metadata->getName()), $metadata->getClass('model'));
         }
-        if ($metadata->hasClass('controller')) {
-            $container->setParameter(sprintf('%s.controller.%s.class', $metadata->getApplicationName(), $metadata->getName()), $metadata->getClass('controller'));
-        }
-        if ($metadata->hasClass('factory')) {
-            $container->setParameter(sprintf('%s.factory.%s.class', $metadata->getApplicationName(), $metadata->getName()), $metadata->getClass('factory'));
-        }
-        if ($metadata->hasClass('repository')) {
-            $container->setParameter(sprintf('%s.repository.%s.class', $metadata->getApplicationName(), $metadata->getName()), $metadata->getClass('repository'));
-        }
 
         if (!$metadata->hasParameter('validation_groups')) {
             return;
@@ -86,7 +77,15 @@ abstract class AbstractDriver implements DriverInterface
      */
     protected function addController(ContainerBuilder $container, MetadataInterface $metadata)
     {
-        $definition = new Definition($metadata->getClass('controller'));
+        $controllerClass = $metadata->getClass('controller');
+
+        if ($this->isServiceId($controllerClass)) {
+            $reference = new Reference($controllerClass);
+            $container->set($metadata->getServiceId('controller'), $reference);
+            return;
+        }
+
+        $definition = new Definition($controllerClass);
         $definition
             ->setArguments([
                 $this->getMetadataDefinition($metadata),
@@ -119,6 +118,12 @@ abstract class AbstractDriver implements DriverInterface
     {
         $factoryClass = $metadata->getClass('factory');
         $modelClass = $metadata->getClass('model');
+
+        if ($this->isServiceId($factoryClass)) {
+            $reference = new Reference($factoryClass);
+            $container->set($metadata->getServiceId('factory'), $reference);
+            return;
+        }
 
         $definition = new Definition($factoryClass);
 
@@ -207,6 +212,15 @@ abstract class AbstractDriver implements DriverInterface
         ;
 
         return $definition;
+    }
+
+    protected function isServiceId($classOrServiceId)
+    {
+        if (class_exists($classOrServiceId)) {
+            return false;
+        }
+
+        return true;
     }
 
     /**

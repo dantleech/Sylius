@@ -51,6 +51,12 @@ class DoctrineORMDriver extends AbstractDoctrineDriver
             $repositoryClass = $metadata->getClass('repository');
         }
 
+        if ($this->isServiceId($repositoryClass)) {
+            $reference = new Reference($repositoryClass);
+            $container->setDefinition($metadata->getSericeId('repository'), $reference);
+            return;
+        }
+
         $definition = new Definition($repositoryClass);
         $definition->setArguments([
             new Reference($metadata->getServiceId('manager')),
